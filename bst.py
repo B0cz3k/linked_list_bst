@@ -15,12 +15,12 @@ def print_tree(root):
     dot.format='png'
     dot.node("RT",str(root.val))
     def add_rec(dot:Digraph,node,name,parent_name="RT"):
-        if node == None:return
+        if node is None:return
         dot.node(name,str(node.val))
-        if not name == "RT":dot.edge(parent_name,name)
+        if name != "RT":dot.edge(parent_name,name)
 
-        add_rec(dot,node.left,name+"L",name)
-        add_rec(dot,node.right,name+"R",name)
+        add_rec(dot, node.left, f"{name}L", name)
+        add_rec(dot, node.right, f"{name}R", name)
 
     add_rec(dot,root,"RT")
     dot.view()
@@ -43,60 +43,58 @@ class tree:
         curr = self.root_node
         while curr != None:
             if value >= curr.val:
-                if curr.right == None:
+                if curr.right is None:
                     curr.right = tree_node(value,curr)
                     return 0
                 else:
                     curr = curr.right
+            elif curr.left is None:
+                curr.left = tree_node(value,curr)
+                return True
             else:
-                if curr.left == None:
-                    curr.left = tree_node(value,curr)
-                    return True
-                else:
-                    curr = curr.left
+                curr = curr.left
         return False
     
     #returns node with value from subtree with root=root or None if value is not in tree
     def getnode(self,value,root = None):
-        curr = self.root_node if root == None else root
-        while(curr != None):
+        curr = self.root_node if root is None else root
+        while (curr != None):
             if value == curr.val:return curr
             else:
-                if value > curr.val: curr = curr.right
-                else: curr = curr.left
+                curr = curr.right if value > curr.val else curr.left
         return None
     def contains(self,value):
         return bool(self.getnode(value))
     
     def min(self,node = None):
-        curr = self.root_node if node == None else node
-        min = curr.val
+        curr = self.root_node if node is None else node
+        mini = curr.val
         while (curr := curr.left) != None:
-            if curr.val < min: min = curr.val
-        return min
+            if curr.val < mini: mini = curr.val
+        return mini
     
     def max(self,node = None):
-        curr = self.root_node if node == None else node
+        curr = self.root_node if node is None else node
         mx = curr.val
         while (curr := curr.right) != None:
             if curr.val > mx: mx = curr.val
         return mx
 
     def num_elements(self,node = None):
-        if node == None: node = self.root_node
+        if node is None: node = self.root_node
         return 1 + (self.num_elements(node.left) if node.left != None else 0) + (self.num_elements(node.right) if node.right != None else 0) 
     
     def remove(self,value,root = None):
-        n = self.getnode(value,self.root_node if root == None else root)
-        if n == None:
+        n = self.getnode(value, self.root_node if root is None else root)
+        if n is None:
             print(f"Node with value {value} does not exist") 
             return False
 
-        if n.left == None and n.right == None:
+        if n.left is None and n.right is None:
             if n.parent.val <= n.val: n.parent.right = None
             else: n.parent.left = None
             del n
-        elif not(n.left == None or n.right == None):
+        elif n.left is not None and n.right is not None:
             n.val = self.min(n.right)
             self.remove(n.val,n.right)
         else:
@@ -107,14 +105,16 @@ class tree:
             if n == self.root_node: self.root_node = self.anchor.right
             del n
 
-n=100
-t = tree(n//2)
 
-arr = [x for x in range(n)]
-for i in [arr.pop(random.randint(0,n-i-1)) for i in range(n)]:
-    t.insert(i)
+if __name__ == "__main__":
+    n=100
+    t = tree(n//2)
 
-print(t.num_elements())
-t.remove(n//2)
-t.remove(n//2)
-print_tree(t.root_node)
+    arr = list(range(n))
+    for i in [arr.pop(random.randint(0,n-i-1)) for i in range(n)]:
+        t.insert(i)
+
+    print(t.num_elements())
+    t.remove(n//2)
+    t.remove(n//2)
+    print_tree(t.root_node)
