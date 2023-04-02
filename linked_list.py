@@ -6,10 +6,12 @@ The following operations should be possible:
 * checking max and min within the structure X
 * checking the number of elements in the structure X
 '''
+import random
+import timeit
 class Node:
-    def __init__(self, data) -> None:
+    def __init__(self, data, nxt=None) -> None:
         self.val = data
-        self.next = None
+        self.next = nxt
 
     def add(self, data):
         while self.next is not None:
@@ -78,9 +80,11 @@ class Node:
 
 if __name__ == "__main__":
     List = Node(5)
+    List = Node(random.randint(0, 100000), List)
     List.add(3)
     List.add(1)
     List.add(2)
+    List = Node(random.randint(0, 100000), List)
     List.add(4)
     print(f'Before removal: {List}')
     List.remove(5)
@@ -91,3 +95,15 @@ if __name__ == "__main__":
     print(f'Max element: {List.maxi()}')
     print(f'Min element: {List.mini()}')
     print(f'Total elements: {List.total_elements()}')
+
+    print('Linked List')
+    list_times = []
+    l = Node(random.randint(0, 100000))
+
+    for i in range(1000, 101000, 1000):
+        for _ in range(1000):
+            l = Node(random.randint(0, 100000), l)
+        
+        result = round((timeit.timeit(lambda: l.exist(random.randint(0, 100000)), number=10000) * 1000) / 10000, 5)
+        print(f'{i} elements: {result} s search time')
+        list_times.append(result)
